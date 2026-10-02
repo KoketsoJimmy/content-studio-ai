@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Content Studio (Copy)</title>
+<style>
+:root{--bg:#fbf8f3;--card:#fffdf9;--fg:#2b2622;--mut:#74695e;--bd:#e9ddcf;--ac:#0b7f78;--ac2:#2ab8ad;--acfg:#fff;--soft:#f5eee4;--er:#b3392f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1613;--card:#231e1a;--fg:#f2ece3;--mut:#b3a698;--bd:#3b322a;--ac:#34d1c1;--ac2:#7fe3d8;--acfg:#10201e;--soft:#2c2520;--er:#ec8d82}}
+:root[data-theme="dark"]{--bg:#1a1613;--card:#231e1a;--fg:#f2ece3;--mut:#b3a698;--bd:#3b322a;--ac:#34d1c1;--ac2:#7fe3d8;--acfg:#10201e;--soft:#2c2520;--er:#ec8d82}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:clamp(15px,1.5vw,17px)/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:clamp(12px,3vw,28px) clamp(12px,3vw,28px) 40px}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:8px;z-index:99}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px}
+h1{font:400 clamp(26px,5vw,38px)/1.1 Georgia,"Times New Roman",serif;letter-spacing:-.01em;margin:0 0 6px;color:var(--ac)}
+h2{font-size:13px;font-weight:500;color:var(--mut);margin:0 0 10px}
+.greet{font:400 clamp(18px,3.4vw,24px)/1.25 Georgia,"Times New Roman",serif;color:var(--fg);margin:0 0 6px}.greet button{font:inherit;font-size:14px;color:var(--ac);background:none;border:0;padding:0 0 0 6px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:44px}
+.search{position:relative;margin:0 0 14px}.search input{padding-left:44px;border-radius:999px;background:var(--card)}
+.search>svg.ic{position:absolute;left:16px;top:14px;color:var(--mut)}
+.qr{position:absolute;left:0;right:0;top:52px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:6px;z-index:20;max-height:320px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.qr button{display:flex;gap:10px;align-items:center;width:100%;min-height:44px;border:0;background:none;color:var(--fg);font:inherit;text-align:left;padding:6px 10px;border-radius:8px;cursor:pointer}.qr button:hover,.qr button:focus-visible{background:var(--soft)}.qr small{color:var(--mut);margin-left:auto}
+.gcats{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;scrollbar-width:none}.gcats .chip{flex:0 0 auto;margin:0}
+.gal{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;margin-bottom:6px;scrollbar-width:thin}
+.gc{flex:0 0 156px;text-align:left;border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:0;cursor:pointer;color:var(--fg);font:inherit;overflow:hidden}
+.gc:hover{border-color:var(--ac2)}
+.gc .th{height:80px;display:grid;place-items:center;background:color-mix(in srgb,hsl(var(--h) 65% 50%) 16%,var(--card));color:color-mix(in srgb,hsl(var(--h) 65% 42%) 75%,var(--fg))}
+.gc .th svg.ic{width:30px;height:30px}.gc .tx{padding:8px 10px 10px;font-size:13px;font-weight:500;line-height:1.3}.gc small{display:block;color:var(--mut);font-weight:400;margin-top:2px}
+.chk{display:flex;align-items:center;gap:10px;min-height:44px;margin:8px 0 0;font-size:14px;color:var(--fg)}.chk input{width:20px;height:20px;min-height:0;accent-color:var(--ac)}
+.pgctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}.pgctl .chip{margin:0}
+.sw{width:30px;height:30px;min-height:0;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--bd);cursor:pointer;padding:0}.sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--fg)}
+.canvas{background:var(--soft);border-radius:12px;padding:clamp(12px,4vw,28px);display:grid;place-items:start center;overflow:auto}
+.sheet{--a:#0b7f78;width:100%;background:#fff;color:#1d1b19;border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.14);overflow-wrap:anywhere}
+.sheet p{margin:.6em 0}.sheet a{color:var(--a)}
+.sheet.doc{max-width:640px;padding:clamp(20px,7%,48px);border-top:6px solid var(--a);font:15px/1.7 Georgia,serif}
+.sheet.doc h1,.sheet.doc h2,.sheet.doc h3{color:var(--a);font:400 1.35em Georgia,serif;margin:1em 0 .3em}
+.sheet.card{max-width:440px;aspect-ratio:1/1;overflow:hidden;background:var(--a);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:9%;border-radius:14px;font:400 1.5rem/1.35 Georgia,serif;position:relative}
+.sheet.card .ft{position:absolute;left:9%;bottom:6%;font:600 11px/1 -apple-system,sans-serif;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.sheet.email{max-width:640px;font:15px/1.6 -apple-system,"Segoe UI",sans-serif}
+.sheet.email .eh{padding:14px 18px;border-bottom:1px solid #e5e5e5;background:#f7f7f7;font-size:13px;color:#555}.sheet.email .eh b{display:block;color:#111;font-size:16px;margin-bottom:4px}
+.sheet.email .eb{padding:6px 18px 14px}
+.sub{color:var(--mut);margin:0;font-size:clamp(13px,2vw,16px)}
+.tb{display:flex;gap:6px;flex-shrink:0}
+.icon{width:44px;height:44px;border:1px solid transparent;background:transparent;color:var(--fg);border-radius:10px;font-size:18px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:clamp(14px,3vw,24px);min-width:0}
+label{display:block;font-size:13px;font-weight:500;color:var(--mut);margin:14px 0 6px}
+textarea,select,input{width:100%;min-height:46px;font:inherit;font-size:16px;color:var(--fg);background:var(--soft);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+textarea{min-height:110px;resize:vertical}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+textarea:focus,input:focus,select:focus{border-color:var(--ac);outline:0}
+.types{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:8px;scrollbar-width:thin}
+.tcard{flex:0 0 auto;min-width:104px;min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:10px;padding:8px 10px;font:500 13px inherit;cursor:pointer}
+.tcard .ib{width:38px;height:38px;border-radius:11px;background:var(--soft);color:var(--ac);display:grid;place-items:center}
+.tcard[aria-pressed=true] .ib{background:rgba(255,255,255,.2);color:var(--acfg)}
+svg.ic{width:1.2em;height:1.2em;flex:none;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tcard svg.ic{width:21px;height:21px}
+.btn,.chip{display:inline-flex;align-items:center;gap:7px}.bar .btn{justify-content:center}
+.icon{display:inline-grid;place-items:center}.icon svg.ic{width:22px;height:22px}
+.convs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.tcard[aria-pressed=true]{background:var(--ac);color:var(--acfg);border-color:var(--ac)}
+@media(min-width:900px){.types{flex-wrap:wrap;overflow:visible}}
+.icon:hover,.chip:hover,.btn:hover,.tcard:hover{border-color:var(--ac);color:var(--ac)}.tcard[aria-pressed=true]:hover,.chip[aria-pressed=true]:hover{color:var(--acfg)}
+.chip,.btn{min-height:44px;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:10px;padding:8px 14px;font:500 14px inherit;cursor:pointer;text-align:left}
+.chip{border-radius:999px;margin:4px 4px 0 0;font-weight:500}
+.chip[aria-pressed=true]{background:var(--ac);color:var(--acfg);border-color:var(--ac)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.row{grid-template-columns:1fr}}
+.more{margin-top:12px;border:1px solid var(--bd);border-radius:12px;padding:4px 12px 12px}
+.more summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600}
+.gowrap{position:sticky;bottom:0;padding:12px 0 2px;background:linear-gradient(transparent,var(--card) 25%)}
+button.go:hover{filter:brightness(1.08)}
+button.go{width:100%;min-height:52px;background:var(--ac);color:var(--acfg);border:0;border-radius:10px;font:500 16px inherit;letter-spacing:.01em;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.note{min-height:20px;margin:6px 0 0;font-size:14px;color:var(--mut)}.note.er{color:var(--er)}
+.layout{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:900px){.layout{grid-template-columns:minmax(330px,5fr) 6fr;align-items:start}.res{position:sticky;top:calc(12px + env(safe-area-inset-top,0px));max-height:calc(100vh - 24px);overflow:auto}}
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.bar .btn{flex:1 1 auto;text-align:center;padding:8px 10px}
+.pv,#ed,.empty{min-height:160px}
+.pv{overflow-wrap:anywhere}.pv pre{background:var(--soft);padding:12px;border-radius:10px;overflow-x:auto;font-size:13px}
+.pv code{font-family:ui-monospace,Menlo,monospace;background:var(--soft);padding:1px 4px;border-radius:4px}.pv pre code{background:none;padding:0}
+.pv a{color:var(--ac);text-decoration-thickness:1px;text-underline-offset:3px}.pv h1,.pv h2,.pv h3{margin:1em 0 .3em;font:400 1.3em Georgia,serif;color:var(--fg)}.pv{line-height:1.7}
+#ed{min-height:300px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+.empty{text-align:center;color:var(--mut);padding:10px}.empty h3{color:var(--fg);margin:8px 0 4px;font:400 20px Georgia,serif}
+.stats{font-size:13px;color:var(--mut);margin:8px 0}
+.load{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:14px;margin-bottom:8px}
+.bar2{width:60px;height:6px;border-radius:9px;background:linear-gradient(90deg,var(--ac2),var(--ac),var(--ac2));background-size:200%;animation:sl 1.2s linear infinite}
+@keyframes sl{to{background-position:200% 0}}
+.banner{background:var(--soft);border:1px solid var(--ac2);border-radius:12px;padding:10px 12px;margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.recent{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.rc{text-align:left;display:block;width:100%;min-height:70px;cursor:pointer;color:var(--fg);font:inherit}.rc small,.hi small{color:var(--mut);display:block}
+.res.fs{position:fixed;inset:0;z-index:50;max-height:none;border-radius:0;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+dialog{width:min(640px,calc(100% - 16px));max-height:88vh;border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--fg);padding:20px;overflow:auto}
+dialog::backdrop{background:rgba(5,5,20,.55)}
+.dh{display:flex;justify-content:space-between;align-items:center}.dh h2{font:400 22px Georgia,serif;color:var(--fg);margin:0}
+.hi{border:1px solid var(--bd);border-radius:12px;padding:10px;margin-top:8px}.hi .bar{margin:8px 0 0}
+.er{color:var(--er)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{body *{visibility:hidden}#pv,#pv *,#sheet,#sheet *{visibility:visible}#pv,#sheet{position:absolute;left:0;top:0;width:100%;box-shadow:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#req">Skip to editor</a>
+<main>
+<header class="top">
+  <div><h1>Content Studio</h1><p id="greet" class="greet" aria-live="polite"></p><p class="sub">Tell me what's on your mind and we'll shape it together. Take your time, and tweak it until it feels just right.</p></div>
+  <div class="tb">
+    <button class="icon" data-act="new" aria-label="New content"><i data-i="plus"></i></button>
+    <button class="icon" data-act="panel" data-v="tpl" aria-label="Templates"><i data-i="templates"></i></button>
+    <button class="icon" data-act="panel" data-v="hist" aria-label="History and favorites"><i data-i="history"></i></button>
+    <button class="icon" data-act="panel" data-v="brand" aria-label="Brand kit"><i data-i="brand"></i></button>
+    <button class="icon" data-act="panel" data-v="set" aria-label="Settings"><i data-i="settings"></i></button>
+    <button class="icon" data-act="theme" aria-label="Toggle theme"><i data-i="theme"></i></button>
+  </div>
+</header>
+<div class="search"><i data-i="search"></i><input id="q" type="search" maxlength="60" placeholder="Search content types and templates…" aria-label="Search content types and templates" autocomplete="off"><div id="qr" class="qr" hidden></div></div>
+<section aria-labelledby="qa"><h2 id="qa">Quick actions</h2><div id="qacts"></div></section>
+<section aria-labelledby="ct"><h2 id="ct">Create content</h2><nav id="types" class="types" aria-label="Content type"></nav></section>
+<section aria-labelledby="gt"><h2 id="gt">Start from a template</h2><div id="gcats" class="gcats"></div><div id="gal" class="gal"></div></section>
+<div id="restore" class="banner" role="alert" hidden><span>Welcome back! Pick up where you left off?</span><button class="btn" data-act="restore">Restore</button><button class="btn" data-act="fresh">Start fresh</button></div>
+<div class="layout">
+ <section class="card" aria-label="Brief">
+  <label for="req" style="margin-top:0">Your request</label>
+  <textarea id="req" maxlength="4000"></textarea>
+  <div id="exs" aria-label="Example prompts"></div>
+  <div class="bar" style="margin:8px 0 0"><button class="btn gate" data-act="improve" id="bimp"><i data-i="custom"></i>Improve my prompt</button></div>
+  <div class="row"><div><label for="tone">Tone</label><select id="tone"></select></div><div><label for="len">Length</label><select id="len"></select></div></div>
+  <label for="aud">Audience</label><input id="aud" maxlength="200" placeholder="e.g. busy startup founders">
+  <label class="chk"><input type="checkbox" id="useBrand"><span>Use my brand kit</span></label>
+  <details class="more"><summary>More options</summary>
+   <div class="row"><div><label for="goal">Goal</label><select id="goal"></select></div><div id="platw"><label for="plat">Platform</label><select id="plat"></select></div>
+   <div><label for="lang">Language</label><select id="lang"></select></div><div><label for="crea">Creativity</label><select id="crea"></select></div></div>
+   <label for="kw">Keywords to include</label><input id="kw" maxlength="200" placeholder="comma separated">
+   <div class="row"><div><label for="cta">Call to action</label><select id="cta"></select></div><div id="ctacw" hidden><label for="ctac">Custom CTA</label><input id="ctac" maxlength="120"></div></div>
+  </details>
+  <div class="gowrap"><button class="go gate" id="gen" data-act="gen">Let's write</button></div>
+  <p id="note" class="note" role="status" aria-live="polite"></p><p id="sst" class="stats" role="status" aria-live="polite"></p>
+ </section>
+ <section class="card res" id="res" aria-label="Output">
+  <div class="bar">
+   <button class="btn" data-act="new" id="bnew"><i data-i="plus"></i>New</button>
+   <button class="btn" data-act="copy" id="bcopy"><i data-i="copy"></i>Copy</button>
+   <button class="btn gate" data-act="regen"><i data-i="refresh"></i>Regenerate</button>
+   <button class="btn" data-act="edit" id="bedit"><i data-i="edit"></i>Edit</button>
+   <button class="btn" data-act="view" id="bview"><i data-i="layout"></i>Page view</button>
+   <button class="btn" data-act="dl" data-v="md"><i data-i="download"></i>.md</button>
+   <button class="btn" data-act="dl" data-v="txt"><i data-i="download"></i>.txt</button>
+   <button class="btn" data-act="print"><i data-i="print"></i>Print</button>
+   <button class="btn" data-act="fs" id="bfs" aria-pressed="false"><i data-i="max"></i>Full screen</button>
+  </div>
+  <div id="load" class="load" hidden><span class="bar2"></span><span>Writing something good for you…</span></div>
+  <div id="empty" class="empty"></div>
+  <div id="pv" class="pv" hidden></div>
+  <div id="page" hidden><div id="pgctl" class="pgctl"></div><div class="canvas"><div id="sheet" class="sheet doc"></div></div></div>
+  <textarea id="ed" hidden aria-label="Edit draft"></textarea>
+  <div id="selbar" class="bar" hidden><span class="sub" style="width:100%;margin:0">Magic edit: select text above, then choose an action.</span></div>
+  <div id="stats" class="stats" aria-live="off"></div>
+  <div id="refw" hidden>
+   <label style="margin-top:0">Suggested next</label><div id="nexts" class="convs"></div>
+   <label>Create something different</label><p class="sub" style="margin:0">Turn this draft into another type, or start a new piece from scratch.</p><div id="convs" class="convs"></div>
+   <label>Quick refine</label><div id="refs"></div>
+   <label for="rc">Custom change (or target language)</label>
+   <div class="row"><input id="rc" maxlength="300" placeholder="Make it warmer, add a friendly sign-off…"><button class="btn gate" data-act="refc">Make the change</button></div>
+  </div>
+ </section>
+</div>
+<section style="margin-top:18px"><h2>Recent drafts</h2><div id="recent" class="recent"></div></section>
+</main>
+<dialog id="dlg" aria-labelledby="dt"><div class="dh"><h2 id="dt"></h2><button class="icon" data-act="close" aria-label="Close">✕</button></div><div id="db"></div></dialog>
+
+<script>
+/* ============ CONFIGURATION (add new options here) ============ */
+const CFG={
+ TONES:['Warm','Professional','Friendly','Casual','Persuasive','Witty','Formal','Empathetic'],
+ LENGTHS:{Short:'short (about 100-200 words, or minimal code)',Medium:'medium (about 300-500 words)',Long:'long and detailed (about 800-1200 words)'},
+ GOALS:['Inform','Educate','Persuade','Sell','Entertain','Announce','Apply','Explain'],
+ PLATFORMS:['General','LinkedIn','Facebook','Instagram','X','TikTok','YouTube','Email','Website'],
+ LANGS:{'English':'Use clear standard English.','South African English':'Use South African English spelling and idiom.','Simple English':'Use plain words and short sentences.','Business English':'Use polished, professional business English.'},
+ CREA:{Precise:'Be precise and conservative; stay close to the request.',Balanced:'Balance accuracy with an engaging, natural style.',Creative:'Be original and vivid, with fresh phrasing.'},
+ CTAS:['None','Contact us','Apply now','Learn more','Buy now','Subscribe','Book a meeting','Visit website','Custom'],
+ CATS:['Career','Business','Marketing','Social Media','Content Creation','Technology','Education','Personal']
+};
+// id doubles as filename slug. plat:1 shows the platform selector.
+const TYPES=[
+ {id:'blog-post',label:'Blog Post',icon:'blog',ph:'Topic, angle and key points',sys:'Write a well-structured blog post: title, short intro, headed sections, conclusion. Use Markdown.',ex:['Write a beginner-friendly article explaining cloud computing.']},
+ {id:'email',label:'Email',icon:'email',ph:'Who it is for and what it should achieve',sys:'Write a complete email with subject line, greeting, body and sign-off.',ex:['Write a professional email applying for an IT internship.']},
+ {id:'code',label:'Code',icon:'code',ph:'What the code should do, and the language',sys:'Write clean, commented, working code in one fenced code block, then a short explanation.',ex:['Create a Java program that reads student marks and calculates the average.']},
+ {id:'social-post',label:'Social Post',icon:'social',plat:1,ph:'Message or announcement',sys:'Write 3 distinct social post variants with fitting hashtags.',ex:['Announce our new coffee shop opening this Saturday.']},
+ {id:'product-copy',label:'Product Copy',icon:'product',plat:1,ph:'Product and its main benefits',sys:'Write product copy: headline, one-line pitch, 3-5 benefit bullets, call to action.',ex:['Describe a waterproof hiking backpack for weekend trekkers.']},
+ {id:'job-application',label:'Job Application',icon:'job',ph:'Role, company and your relevant background',sys:'Write a concise job application message that highlights the applicant\'s fit.',ex:['Apply for a junior data analyst role; I have a statistics degree.']},
+ {id:'cover-letter',label:'Cover Letter',icon:'cover',ph:'Role, company, your strengths',sys:'Write a tailored one-page cover letter with a strong opening and confident close.',ex:['Cover letter for a graduate software developer position.']},
+ {id:'linkedin-post',label:'LinkedIn Post',icon:'link',ph:'What you want to share',sys:'Write an engaging LinkedIn post with a strong hook, short paragraphs and a few hashtags.',ex:['Create a LinkedIn post announcing that I completed a cloud computing certification.']},
+ {id:'youtube-script',label:'YouTube Script',icon:'video',ph:'Video topic and audience',sys:'Write a YouTube script: hook, intro, main sections with talking points, outro with subscribe prompt.',ex:['A 5-minute script on 5 study habits for university students.']},
+ {id:'youtube-description',label:'YouTube Description',icon:'ytdesc',ph:'Video topic and key points',sys:'Write a YouTube description: hook lines, summary, timestamps placeholders, links placeholders, hashtags.',ex:['Description for a video about building a home network.']},
+ {id:'advertisement',label:'Advertisement',icon:'ad',plat:1,ph:'Product, offer and audience',sys:'Write ad copy: headline, body text, CTA, plus two alternate headlines.',ex:['Facebook ad for a 20% off weekend sale at a bike shop.']},
+ {id:'business-proposal',label:'Business Proposal',icon:'chart',ph:'Client, problem and your solution',sys:'Write a business proposal with summary, problem, solution, deliverables, timeline placeholders and next steps. Use Markdown.',ex:['Proposal to build a booking website for a small salon.']},
+ {id:'readme',label:'README',icon:'readme',ph:'Project name, what it does, tech used',sys:'Write a GitHub README in Markdown: overview, features, install, usage, contributing, license.',ex:['README for a Python tool that renames photos by date.']},
+ {id:'documentation',label:'Documentation',icon:'docs',ph:'What to document',sys:'Write clear technical documentation with headings, examples and notes. Use Markdown.',ex:['Document a REST API endpoint for creating users.']},
+ {id:'custom',label:'Custom',icon:'custom',ph:'Describe exactly what you want written',sys:'Follow the request precisely and produce polished content.',ex:['Write a short toast for my sister\'s graduation party.']}
+];
+// Templates pre-fill the form. t=type id, g=goal, c=CTA
+const TEMPLATES=[
+ {cat:'Career',n:'Job application email',t:'job-application',g:'Apply',c:'None',r:'Write an email applying for the [role] position at [company]. My background: [skills/experience].'},
+ {cat:'Career',n:'Follow-up email',t:'email',g:'Inform',c:'None',r:'Write a polite follow-up email about my application for [role] sent on [date].'},
+ {cat:'Career',n:'Cover letter',t:'cover-letter',g:'Apply',c:'None',r:'Cover letter for [role] at [company]. Highlights: [achievements].'},
+ {cat:'Career',n:'LinkedIn About section',t:'custom',g:'Inform',c:'None',r:'Write a LinkedIn About section for a [profession] with strengths in [skills].'},
+ {cat:'Career',n:'Interview thank-you',t:'email',g:'Inform',c:'None',r:'Thank-you message after interviewing for [role] with [interviewer].'},
+ {cat:'Business',n:'Business proposal',t:'business-proposal',g:'Persuade',c:'Book a meeting',r:'Proposal for [client] to solve [problem] with [solution].'},
+ {cat:'Business',n:'Client email',t:'email',g:'Inform',c:'None',r:'Email to a client about [topic].'},
+ {cat:'Business',n:'Meeting agenda',t:'custom',g:'Inform',c:'None',r:'Agenda for a [duration] meeting about [topic] with [attendees].'},
+ {cat:'Business',n:'Project update',t:'email',g:'Inform',c:'None',r:'Project update for [project]: done [x], next [y], risks [z].'},
+ {cat:'Business',n:'Business announcement',t:'custom',g:'Announce',c:'Learn more',r:'Announce [news] to our customers.'},
+ {cat:'Marketing',n:'Product description',t:'product-copy',g:'Sell',c:'Buy now',r:'Describe [product] for [audience]. Benefits: [benefits].'},
+ {cat:'Marketing',n:'Facebook advertisement',t:'advertisement',g:'Sell',c:'Learn more',r:'Facebook ad for [offer].'},
+ {cat:'Marketing',n:'Promotional email',t:'email',g:'Sell',c:'Buy now',r:'Promotional email for [offer] ending [date].'},
+ {cat:'Social Media',n:'Social campaign',t:'social-post',g:'Persuade',c:'Learn more',r:'One week of social posts promoting [topic].'},
+ {cat:'Social Media',n:'LinkedIn announcement',t:'linkedin-post',g:'Announce',c:'None',r:'Announce that I [achievement].'},
+ {cat:'Content Creation',n:'YouTube script',t:'youtube-script',g:'Educate',c:'Subscribe',r:'Script about [topic] for [audience].'},
+ {cat:'Content Creation',n:'Blog article',t:'blog-post',g:'Educate',c:'None',r:'Article about [topic] for beginners.'},
+ {cat:'Technology',n:'README',t:'readme',g:'Explain',c:'None',r:'README for [project]: [what it does], built with [tech].'},
+ {cat:'Technology',n:'Technical documentation',t:'documentation',g:'Explain',c:'None',r:'Document [system/feature].'},
+ {cat:'Technology',n:'API documentation',t:'documentation',g:'Explain',c:'None',r:'API docs for endpoint [method path] with params [params].'},
+ {cat:'Technology',n:'Code explanation',t:'documentation',g:'Explain',c:'None',r:'Explain what this code does, step by step:\n[paste code]'},
+ {cat:'Education',n:'Study guide',t:'custom',g:'Educate',c:'None',r:'Study guide on [subject] with key terms and 5 practice questions.'},
+ {cat:'Education',n:'Lesson summary',t:'blog-post',g:'Explain',c:'None',r:'Summarise the lesson on [topic] simply.'},
+ {cat:'Personal',n:'Thank-you note',t:'email',g:'Inform',c:'None',r:'Warm thank-you note to [person] for [reason].'},
+ {cat:'Personal',n:'Speech or toast',t:'custom',g:'Entertain',c:'None',r:'Short toast for [occasion] about [person].'}
+];
+// Suggested follow-up types shown after each draft (add or edit freely)
+const NEXT={'blog-post':['linkedin-post','social-post','email'],'email':['social-post','linkedin-post','custom'],'code':['documentation','readme','blog-post'],'social-post':['advertisement','linkedin-post','blog-post'],'product-copy':['advertisement','social-post','email'],'job-application':['cover-letter','linkedin-post','email'],'cover-letter':['job-application','email','linkedin-post'],'linkedin-post':['blog-post','social-post','email'],'youtube-script':['youtube-description','blog-post','social-post'],'youtube-description':['social-post','youtube-script','blog-post'],'advertisement':['social-post','product-copy','email'],'business-proposal':['email','documentation','linkedin-post'],'readme':['documentation','blog-post','linkedin-post'],'documentation':['readme','blog-post','email'],'custom':['email','blog-post','social-post']};
+const SEL=[['Rewrite','Rewrite this passage with a fresh approach.'],['Shorter','Make this passage shorter.'],['Longer','Expand this passage with more detail.'],['Fix grammar','Fix grammar and spelling only.'],['Friendlier','Make this passage warmer and friendlier.']];
+const HUES={Career:170,Business:215,Marketing:20,'Social Media':330,'Content Creation':45,Technology:265,Education:130,Personal:10};
+// Refinements: second item is text or a function returning text (null = cannot run yet)
+const REFINE=[
+ ['Make shorter','Make it noticeably shorter, keeping the key points.'],['Make longer','Expand it with more useful detail.'],
+ ['Make professional','Rewrite in a professional tone.'],['Make friendly','Rewrite in a warm, friendly tone.'],
+ ['Make persuasive','Make it more persuasive.'],['Simplify','Simplify the language so anyone can follow it.'],
+ ['Fix grammar','Fix grammar, spelling and punctuation only.'],['Improve clarity','Improve clarity and flow.'],
+ ['Add examples','Add relevant examples.'],['Add CTA','Add a clear call to action.'],
+ ['Add emojis','Add fitting emojis, sparingly.'],['Remove emojis','Remove all emojis.'],
+ ['Rewrite','Rewrite with a fresh approach, same meaning.'],['Improve','Improve the writing overall: clarity, flow and word choice.'],['Make concise','Cut filler and tighten every sentence without losing meaning.'],['Humanize','Rewrite so it sounds natural and human; avoid cliches and stock phrases.'],['Improve flow','Improve transitions and the order of ideas so it reads smoothly.'],['Stronger intro','Write a stronger, more engaging introduction.'],['Stronger conclusion','Write a stronger, more memorable conclusion.'],
+ ['Change tone',()=>'Change the tone to '+$('tone').value+'.'],
+ ['Translate',()=>{const l=$('rc').value.trim();return l?'Translate the full text into '+l+'.':null}]
+];
+
+/* ============ STATE & STORAGE ============ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ICONS={
+blog:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+email:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+code:'<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+social:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/>',
+product:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/>',
+job:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/>',
+cover:'<path d="M4 9l8-5 8 5v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="m4 10 8 5 8-5"/>',
+link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+video:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/>',
+ytdesc:'<path d="M4 6h16M4 11h16M4 16h8"/><path d="m16 15 4 2.5-4 2.5z"/>',
+ad:'<path d="M3 11v3a1 1 0 0 0 1 1h2l8 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M18 9a4 4 0 0 1 0 6"/>',
+chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+readme:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/>',
+docs:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+custom:'<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17v4M17 19h4"/>',
+templates:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+settings:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+theme:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',
+copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/>',
+refresh:'<path d="M20 11a8 8 0 0 0-14-4L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4l2-2M20 20v-5h-5"/>',
+edit:'<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/>',
+eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+print:'<path d="M7 9V3h10v6M7 17H5a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>',
+max:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+layout:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+brand:'<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.5-1-1.7-1-3 0-1 .8-2 2-2h2.5A3.5 3.5 0 0 0 21 10.5C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="10" cy="7.5" r=".8"/><circle cx="14.5" cy="7.5" r=".8"/>'
+};
+const ic=(n,z)=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"${z?` style="width:${z}px;height:${z}px"`:''}>${ICONS[n]||''}</svg>`;
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+const DEF={theme:'system',tone:'Professional',len:'Medium',lang:'English',auto:true,name:''};
+const S={type:'blog-post',out:'',edit:false,busy:false,fs:false,panel:'',conf:null,tc:'Career',pending:null,
+ set:Object.assign({},DEF,ld('cs.set',{})),hist:ld('cs.hist',[]),hp:{q:'',f:'all',ren:null}};
+const BR0=()=>({on:false,name:'',voice:'',avoid:'',kw:''});S.set.brand=Object.assign(BR0(),S.set.brand);S.prof='';S.gc='All';S.view='text';S.pg='doc';S.pc=0;
+let sample=null,noteT,saveT;
+const T=()=>TYPES.find(t=>t.id===S.type)||TYPES[0];
+const saveSet=()=>sv('cs.set',S.set);
+
+/* ============ UI HELPERS ============ */
+const fill=(id,arr,v)=>{$(id).innerHTML=arr.map(x=>'<option>'+esc(x)+'</option>').join('');if(v)$(id).value=v};
+function note(m,er){const n=$('note');n.textContent=m;n.className='note'+(er?' er':'');clearTimeout(noteT);noteT=setTimeout(()=>n.textContent='',6000)}
+function renderGreet(){
+ const g=$('greet'),h=new Date().getHours(),part=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+ const n=(S.set.name||S.prof||'').trim().split(/\s+/)[0];
+ g.textContent=n?part+', '+n+'. Welcome to your studio.':'Welcome to your studio.';
+ if(!n){const b=document.createElement('button');b.dataset.act='panel';b.dataset.v='set';b.textContent='Add your name';g.appendChild(b)}
+}
+function applyTheme(){S.set.theme==='system'?document.documentElement.removeAttribute('data-theme'):document.documentElement.setAttribute('data-theme',S.set.theme)}
+function renderTypes(){$('types').innerHTML=TYPES.map(t=>`<button class="tcard" data-act="type" data-v="${t.id}" aria-pressed="${t.id===S.type}"><span class="ib">${ic(t.icon)}</span>${esc(t.label)}</button>`).join('')}
+function renderExs(){const e=!$('req').value.trim();$('exs').innerHTML=e?T().ex.map((x,i)=>`<button class="chip" data-act="ex" data-v="${i}">${ic('custom',16)}${esc(x)}</button>`).join(''):''}
+function renderEmpty(){$('empty').innerHTML=`<h3>What shall we write together?</h3><p>Pick a type, tell me a little about it, and we'll take it from there. Need a spark? Try one of these:</p>${T().ex.map((x,i)=>`<button class="chip" data-act="ex" data-v="${i}">${esc(x)}</button>`).join('')}<p><button class="btn" data-act="panel" data-v="tpl">${ic('templates',16)}Browse templates</button></p>`}
+function renderNexts(){$('nexts').innerHTML=(NEXT[S.type]||[]).map(id=>{const t=TYPES.find(x=>x.id===id);return t?`<button class="chip gate" data-act="conv" data-v="${id}">${ic(t.icon,16)}${esc(t.label)}</button>`:''}).join('')}
+const SW=[['Teal','#0b7f78'],['Coral','#c94a33'],['Indigo','#4b4fc4'],['Sand','#8a5a1c'],['Ink','#1f2328']];
+const PGF=[['doc','Document'],['card','Social card'],['email','Email']];
+const plain=t=>t.replace(/```[\s\S]*?```/g,'').replace(/^#{1,6}\s+/gm,'').replace(/[*_`>]/g,'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').trim();
+function renderPage(){
+ $('pgctl').innerHTML=PGF.map(([k,l])=>`<button class="chip" data-act="pgf" data-v="${k}" aria-pressed="${k===S.pg}">${l}</button>`).join('')+'<span style="flex:1"></span>'+SW.map((c,i)=>`<button class="sw" data-act="pgc" data-v="${i}" aria-label="${c[0]} color" aria-pressed="${i===S.pc}" style="background:${c[1]}"></button>`).join('');
+ const sh=$('sheet'),brand=esc(S.set.brand.name||'Content Studio');
+ sh.className='sheet '+S.pg;sh.style.fontSize='';sh.style.setProperty('--a',SW[S.pc][1]);
+ if(S.pg==='doc')sh.innerHTML=md(S.out);
+ else if(S.pg==='email'){const m=S.out.match(/^\**subject:?\**\s*(.+)$/im),body=m?S.out.replace(m[0],'').trim():S.out;
+  sh.innerHTML=`<div class="eh"><b>${esc(m?m[1].replace(/\*/g,''):'Your email')}</b>From: ${brand}</div><div class="eb">${md(body)}</div>`}
+ else{const all=plain(S.out),ps=all.split(/\n{2,}/);let t='';
+  for(const p of ps){if(t&&(t+p).length>320)break;t+=(t?'\n\n':'')+p}
+  if(t.length>320)t=t.slice(0,317)+'…';else if(t.length<all.length)t+='…';
+  sh.style.fontSize=t.length<110?'1.9rem':t.length<220?'1.45rem':'1.15rem';
+  sh.innerHTML=esc(t).replace(/\n/g,'<br>')+`<span class="ft">${brand}</span>`}
+}
+function renderGallery(){
+ $('gcats').innerHTML=['All'].concat(CFG.CATS).map(c=>`<button class="chip" data-act="gcat" data-v="${c}" aria-pressed="${c===S.gc}">${c}</button>`).join('');
+ $('gal').innerHTML=TEMPLATES.map((t,i)=>[t,i]).filter(([t])=>S.gc==='All'||t.cat===S.gc).map(([t,i])=>`<button class="gc" data-act="tpl" data-v="${i}" style="--h:${HUES[t.cat]||200}"><div class="th">${ic(TYPES.find(x=>x.id===t.t).icon)}</div><div class="tx">${esc(t.n)}<small>${esc(t.cat)}</small></div></button>`).join('');
+}
+function search(q){
+ q=q.trim().toLowerCase();const r=$('qr');if(!q){r.hidden=true;return}
+ const a=TYPES.filter(t=>t.label.toLowerCase().includes(q)).map(t=>`<button data-act="qtype" data-v="${t.id}">${ic(t.icon,18)}${esc(t.label)}<small>Content type</small></button>`);
+ const b=TEMPLATES.map((t,i)=>[t,i]).filter(([t])=>(t.n+' '+t.cat).toLowerCase().includes(q)).slice(0,6).map(([t,i])=>`<button data-act="qtpl" data-v="${i}">${ic(TYPES.find(x=>x.id===t.t).icon,18)}${esc(t.n)}<small>${esc(t.cat)}</small></button>`);
+ r.innerHTML=a.concat(b).join('')||'<p class="sub" style="padding:8px 10px;margin:0">No matches. Try "email" or "proposal".</p>';r.hidden=false;
+}
+const closeQ=()=>{$('q').value='';$('qr').hidden=true};
+function renderConvs(){$('convs').innerHTML=TYPES.filter(t=>t.id!==S.type).map(t=>`<button class="chip gate" data-act="conv" data-v="${t.id}">${ic(t.icon,16)}${esc(t.label)}</button>`).join('')}
+function setType(id){S.type=id;renderConvs();renderNexts();renderTypes();$('platw').hidden=!T().plat;$('req').placeholder=T().ph;renderExs();renderEmpty();saveDraft()}
+function form(){return{req:$('req').value,goal:$('goal').value,aud:$('aud').value,plat:$('plat').value,lang:$('lang').value,tone:$('tone').value,len:$('len').value,crea:$('crea').value,kw:$('kw').value,cta:$('cta').value,ctac:$('ctac').value}}
+function setForm(f){for(const k in f){if($(k))$(k).value=f[k]}$('ctacw').hidden=$('cta').value!=='Custom';renderExs()}
+function stats(){const t=S.out.trim(),w=t?t.split(/\s+/).length:0;$('stats').textContent=w?`${w} words · ${S.out.length} characters · ~${Math.max(1,Math.ceil(w/200))} min read`:''}
+
+/* ============ SAFE MARKDOWN (escape first, then whitelist tags) ============ */
+function md(src){
+ const blocks=[];
+ const s=esc(src).replace(/```[\w-]*\n([\s\S]*?)```/g,(_,c)=>{blocks.push('<pre><code>'+c+'</code></pre>');return '\u0000'+(blocks.length-1)+'\u0000'});
+ const inl=t=>t.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<i>$2</i>').replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+ const o=[];let list=null;const close=()=>{if(list){o.push('</'+list+'>');list=null}};
+ for(const line of s.split('\n')){let m;
+  if(m=line.match(/^(#{1,4})\s+(.*)/)){close();o.push(`<h${m[1].length}>${inl(m[2])}</h${m[1].length}>`)}
+  else if(m=line.match(/^\s*[-*]\s+(.*)/)){if(list!=='ul'){close();o.push('<ul>');list='ul'}o.push('<li>'+inl(m[1])+'</li>')}
+  else if(m=line.match(/^\s*\d+[.)]\s+(.*)/)){if(list!=='ol'){close();o.push('<ol>');list='ol'}o.push('<li>'+inl(m[1])+'</li>')}
+  else if(!line.trim())close();
+  else if(/^\u0000\d+\u0000$/.test(line.trim())){close();o.push(line.trim())}
+  else{close();o.push('<p>'+inl(line)+'</p>')}}
+ close();return o.join('').replace(/\u0000(\d+)\u0000/g,(_,i)=>blocks[i]);
+}
+function renderOut(){
+ const has=!!S.out.trim();
+ $('empty').hidden=has;const pg=has&&!S.edit&&S.view==='page';$('pv').hidden=!has||S.edit||pg;$('page').hidden=!pg;$('ed').hidden=!has||!S.edit;$('refw').hidden=!has;$('selbar').hidden=!(S.edit&&has);
+ if(has){if(S.edit)$('ed').value=S.out;else{$('pv').innerHTML=md(S.out);if(pg)renderPage()}}
+ $('bedit').innerHTML=ic(S.edit?'eye':'edit')+(S.edit?'Preview':'Edit');$('bview').innerHTML=ic(S.view==='page'?'eye':'layout')+(S.view==='page'?'Text view':'Page view');stats();
+}
+
+/* ============ PROMPT BUILDER ============ */
+const brandLine=()=>{const b=S.set.brand;if(!b.on)return '';const p=[b.name&&'brand "'+b.name+'"',b.voice&&'voice: '+b.voice,b.avoid&&'never use: '+b.avoid,b.kw&&'weave in naturally: '+b.kw].filter(Boolean);return p.length?'- Brand kit: '+p.join('; '):''};
+function buildPrompt(f,extra){
+ const t=T();
+ return ['# Role','You are an expert writer and editor. '+t.sys,'# Requirements (follow exactly)',
+  '- Content type: '+t.label,'- Goal: '+f.goal,'- Audience: '+(f.aud.trim()||'general readers'),
+  t.plat?'- Platform: '+f.plat:'','- Tone: '+f.tone,'- Length: '+CFG.LENGTHS[f.len],'- Language: '+CFG.LANGS[f.lang],
+  '- Creativity: '+CFG.CREA[f.crea],'- Keywords to include naturally: '+(f.kw.trim()||'none'),
+  '- Call to action: '+(f.cta==='Custom'?f.ctac.trim():f.cta),brandLine(),'# Request',f.req.trim(),
+  '# Rules','Never invent facts, names, numbers or credentials the user did not provide; use clear [placeholders] for missing details. Make only reasonable, low-risk assumptions.',
+  extra||'','Output only the finished content, no preamble.'].filter(Boolean).join('\n');
+}
+
+/* ============ AI GENERATION ============ */
+function errMsg(e){const c=e&&e.code;
+ if(c==='not_granted')return 'That\'s completely fine. Nothing was written without your OK.';
+ if(c==='rate_limited')return 'Let\'s take a short breather, then try again.';
+ if(!navigator.onLine)return 'You seem to be offline. Check your connection and try again.';
+ return 'Sorry, that didn\'t go through. Shall we try again?'}
+function setBusy(b){S.busy=b;document.querySelectorAll('.gate').forEach(x=>x.disabled=b);$('load').hidden=!b;$('res').setAttribute('aria-busy',b);$('gen').textContent=b?'Writing for you…':'Let\'s write'}
+async function run(prompt,f){
+ if(S.busy)return;
+ if(!sample){try{sample=await claude.use('sample')}catch(e){}}
+ if(!sample){note('AI writing isn\'t available here. Open this page from its claude.ai link.',1);return}
+ setBusy(true);const prev=S.out;
+ try{
+  const r=await sample(prompt,{cache:false,onText:({text})=>{S.out=text;renderOut()}});
+  S.out=r.text;S.dirty=false;renderOut();addHist(f);saveDraft();note('All done. Hope you like it ✓');
+ }catch(e){S.out=prev;renderOut();note(errMsg(e),1)}
+ setBusy(false);
+}
+function valid(){const f=form();
+ if(f.req.trim().length<5){note('Tell me a little about what you need, and we\'ll get started.',1);$('req').focus();return null}
+ if(f.cta==='Custom'&&!f.ctac.trim()){note('Type your custom call to action.',1);return null}
+ return f}
+function generate(){const f=valid();if(f)run(buildPrompt(f),f)}
+function regen(){const f=valid();if(f)run(buildPrompt(f,'Take a fresh, noticeably different approach.'),f)}
+async function magic(i,custom){
+ const ed=$('ed'),a=ed.selectionStart,b=ed.selectionEnd,t=ed.value;
+ if(a===b){note('Select some text in the editor first, then pick an action.',1);return}
+ if(S.busy)return;
+ if(!sample){try{sample=await claude.use('sample')}catch(e){}}
+ if(!sample){note('AI writing isn\'t available here. Open this page from its claude.ai link.',1);return}
+ setBusy(true);
+ try{const r=await sample(`Edit only the passage below. ${custom||SEL[i][1]} Keep the meaning, do not invent facts, and return only the revised passage with no quotes or commentary.\n---\n${t.slice(a,b)}\n---`,{cache:false});
+  S.out=t.slice(0,a)+r.text.trim()+t.slice(b);S.dirty=true;renderOut();note('Passage updated ✓')}
+ catch(e){note(errMsg(e),1)}
+ setBusy(false);
+}
+function refine(x){
+ if(!S.out.trim())return;let ins=typeof x==='number'?REFINE[x][1]:x;
+ if(typeof ins==='function')ins=ins();
+ if(!ins){note('Type the target language in the box first.',1);$('rc').focus();return}
+ if(S.edit&&$('ed').selectionStart!==$('ed').selectionEnd)return magic(0,ins);
+ const f=form();
+ run(`You are an expert editor. Current draft:\n---\n${S.out}\n---\nApply this change: ${ins}\nKeep everything else, do not invent facts, and return the complete revised version only.`,f);
+}
+
+/* ============ OUTPUT ACTIONS ============ */
+async function copy(){if(!S.out)return;try{await navigator.clipboard.writeText(S.out);note('Copied, it\'s all yours ✓')}catch(e){note('Couldn\'t copy automatically. Tap Edit and select the text instead.',1)}}
+async function dl(ext){
+ if(!S.out)return;
+ const name=`content-studio-${T().id}-${new Date().toISOString().slice(0,10)}.${ext}`;
+ try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:name,data:S.out});note('Saved '+name)}
+ catch(e){note('Download isn\'t available here. Use Copy instead.',1)}
+}
+function print(){if(!S.out)return;S.edit=false;renderOut();setTimeout(()=>{try{window.print()}catch(e){note('Printing isn\'t available here.',1)}},50)}
+function toggleFs(){S.fs=!S.fs;$('res').classList.toggle('fs',S.fs);$('bfs').setAttribute('aria-pressed',S.fs);$('bfs').innerHTML=ic('max')+(S.fs?'Exit full screen':'Full screen')}
+
+/* ============ HISTORY & FAVORITES ============ */
+function addHist(f){
+ S.hist.unshift({id:Date.now().toString(36),ts:Date.now(),type:S.type,title:T().label+': '+f.req.trim().slice(0,40),req:f.req,out:S.out,tone:f.tone,len:f.len,plat:T().plat?f.plat:'',fav:false});
+ S.hist=S.hist.slice(0,100);if(!sv('cs.hist',S.hist))note('Saved, but browser storage is full or blocked.',1);renderRecent();
+}
+const saveHist=()=>{sv('cs.hist',S.hist);renderRecent()};
+const H=id=>S.hist.find(h=>h.id===id);
+const fmt=ts=>new Date(ts).toLocaleString([],{dateStyle:'medium',timeStyle:'short'});
+function renderRecent(){$('recent').innerHTML=S.hist.length?S.hist.slice(0,4).map(h=>`<button class="card rc" data-act="open" data-v="${h.id}"><b>${h.fav?'★ ':''}${esc(h.title)}</b><small>${fmt(h.ts)}</small></button>`).join(''):'<p class="sub">Nothing here yet. Your drafts will wait for you here.</p>'}
+function openHist(id){const h=H(id);if(!h)return;setType(h.type);setForm({req:h.req,tone:h.tone,len:h.len});S.out=h.out;S.edit=false;renderOut();$('dlg').open&&$('dlg').close();$('res').scrollIntoView({block:'start'})}
+function histList(){
+ const q=S.hp.q.toLowerCase(),f=S.hp.f;
+ const l=S.hist.filter(h=>(f==='all'||(f==='fav'?h.fav:h.type===f))&&(h.title+h.req).toLowerCase().includes(q));
+ return l.length?l.map(h=>`<div class="hi"><b>${esc(h.title)}</b><small>${fmt(h.ts)} · ${esc(h.tone)} · ${esc(h.len)}</small>
+  ${S.hp.ren===h.id?`<label for="rn">Title</label><input id="rn" maxlength="80" value="${esc(h.title)}"><div class="bar"><button class="btn" data-act="rsave" data-v="${h.id}">Save</button></div>`:`<div class="bar">
+  <button class="btn" data-act="open" data-v="${h.id}">Open</button>
+  <button class="btn" data-act="hcopy" data-v="${h.id}">Copy</button>
+  <button class="btn" data-act="fav" data-v="${h.id}" aria-pressed="${h.fav}">${h.fav?'★ Favorited':'☆ Favorite'}</button>
+  <button class="btn" data-act="ren" data-v="${h.id}">Rename</button>
+  <button class="btn ${S.conf==='d'+h.id?'er':''}" data-act="del" data-v="${h.id}">${S.conf==='d'+h.id?'Tap again to delete':'Delete'}</button></div>`}</div>`).join(''):'<p class="sub">No matching drafts.</p>'}
+function confirm2(key,fn){if(S.conf===key){S.conf=null;fn()}else{S.conf=key;rerender();setTimeout(()=>{if(S.conf===key){S.conf=null;rerender()}},4000)}}
+
+/* ============ PANELS (history, templates, settings) ============ */
+const PANELS={
+ hist:()=>`<label for="hq">Search</label><input id="hq" type="search" value="${esc(S.hp.q)}"><label for="hf">Show</label><select id="hf"><option value="all">All drafts</option><option value="fav">Favorites</option>${TYPES.map(t=>`<option value="${t.id}">${esc(t.label)}</option>`).join('')}</select><div id="hl">${histList()}</div>`,
+ tpl:()=>`<div>${CFG.CATS.map(c=>`<button class="chip" data-act="tcat" data-v="${c}" aria-pressed="${c===S.tc}">${c}</button>`).join('')}</div>`+TEMPLATES.map((t,i)=>t.cat===S.tc?`<button class="btn hi" style="width:100%;display:block" data-act="tpl" data-v="${i}"><b>${esc(t.n)}</b><small>${esc(TYPES.find(x=>x.id===t.t).label)} · ${t.g}</small></button>`:'').join(''),
+ set:()=>{const o=(a,v)=>a.map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('');
+  return `<label for="sName" style="margin-top:0">Your name</label><input id="sName" maxlength="40" value="${esc(S.set.name||'')}" placeholder="How should I greet you?"><p class="sub" style="margin-top:6px">Leave blank to use your Claude profile name when available.</p><label for="sTheme">Theme</label><select id="sTheme">${o(['system','light','dark'],S.set.theme)}</select>
+  <div class="row"><div><label for="sTone">Default tone</label><select id="sTone">${o(CFG.TONES,S.set.tone)}</select></div><div><label for="sLen">Default length</label><select id="sLen">${o(Object.keys(CFG.LENGTHS),S.set.len)}</select></div></div>
+  <label for="sLang">Default language</label><select id="sLang">${o(Object.keys(CFG.LANGS),S.set.lang)}</select>
+  <label><input type="checkbox" id="sAuto" style="width:auto;min-height:0" ${S.set.auto?'checked':''}> Auto-save my draft on this device</label>
+  <div class="bar" style="margin-top:12px"><button class="btn ${S.conf==='ch'?'er':''}" data-act="clearHist">${S.conf==='ch'?'Tap again to confirm':'Clear history'}</button><button class="btn ${S.conf==='cp'?'er':''}" data-act="clearPrefs">${S.conf==='cp'?'Tap again to confirm':'Clear local preferences'}</button></div>
+  <h2 style="margin-top:14px">Keyboard shortcuts</h2><p class="sub">Ctrl/Cmd + Enter: Write · Ctrl/Cmd + Shift + C: Copy · Ctrl/Cmd + Shift + R: Regenerate · Esc: close panel or full screen</p>
+  <p class="sub">Your drafts stay private in this browser. Only your request is shared with Claude to write it.</p>`}
+};
+const BF={bName:'name',bVoice:'voice',bAvoid:'avoid',bKw:'kw'};
+const TITLES={hist:'History & favorites',tpl:'Template library',set:'Settings'};
+TITLES.brand='Brand kit';
+PANELS.brand=()=>{const b=S.set.brand;return `<p class="sub">Save your brand voice once and apply it to everything you write. Switch it on with "Use my brand kit" in the form.</p><label for="bName">Brand or business name</label><input id="bName" maxlength="80" value="${esc(b.name)}"><label for="bVoice">Brand voice</label><textarea id="bVoice" maxlength="300" placeholder="Warm, plain-spoken, a little playful. Short sentences.">${esc(b.voice)}</textarea><label for="bAvoid">Words to avoid</label><input id="bAvoid" maxlength="200" value="${esc(b.avoid)}"><label for="bKw">Always include</label><input id="bKw" maxlength="200" value="${esc(b.kw)}" placeholder="tagline, key phrases">`};
+function rerender(){if(S.panel&&$('dlg').open)$('db').innerHTML=PANELS[S.panel]()}
+function openPanel(p){S.panel=p;$('dt').textContent=TITLES[p];$('db').innerHTML=PANELS[p]();if(!$('dlg').open)$('dlg').showModal()}
+function applyTpl(i){const t=TEMPLATES[i];setType(t.t);setForm({req:t.r,goal:t.g,cta:t.c});S.dirty=true;$('dlg').close();$('req').focus()}
+
+/* ============ AUTOSAVE ============ */
+function setSaved(m){const e=$('sst');if(e)e.textContent=m}
+function saveDraft(){clearTimeout(saveT);if(S.set.auto)setSaved('Saving…');saveT=setTimeout(()=>{if(S.set.auto){setSaved(sv('cs.draft',{type:S.type,f:form(),out:S.out})?'Saved':'Could not save (storage full or blocked)')}},600)}
+
+/* ============ EVENTS ============ */
+const ACT={
+ type:v=>setType(v),
+ view:()=>{S.view=S.view==='page'?'text':'page';S.edit=false;renderOut()},pgf:v=>{S.pg=v;renderPage()},pgc:v=>{S.pc=+v;renderPage()},
+ qtype:v=>{closeQ();setType(v);$('req').focus()},qtpl:v=>{closeQ();applyTpl(+v)},gcat:v=>{S.gc=v;renderGallery()},sel:v=>magic(+v),
+ new:()=>{if(S.busy)return;
+  if(S.dirty&&S.conf!=='new'){S.conf='new';note('You have unsaved edits. Tap New again to discard them.',1);setTimeout(()=>{if(S.conf==='new')S.conf=null},4000);return}
+  S.conf=null;S.dirty=false;S.out='';S.edit=false;$('req').value='';renderOut();renderExs();saveDraft();
+  $('types').scrollIntoView({behavior:'smooth',block:'start'});$('req').focus({preventScroll:true});note('Fresh page. Pick a type or tell me what you need.')},
+ conv:v=>{if(S.busy||!S.out.trim())return;const f=form(),src=S.out;f.req='Converted from '+T().label+(f.req.trim()?': '+f.req.trim():'');
+  setType(v);const t=T();
+  run(`# Role\nYou are an expert writer and editor. ${t.sys}\n# Task\nTurn the source draft below into a ${t.label}. Keep its facts, ideas and names; do not invent new facts.\n# Requirements\n- Tone: ${f.tone}\n- Length: ${CFG.LENGTHS[f.len]}\n- Language: ${CFG.LANGS[f.lang]}\n${t.plat?'- Platform: '+f.plat+'\n':''}# Source draft\n---\n${src}\n---\nOutput only the finished ${t.label}, no preamble.`,f);
+  $('res').scrollIntoView({behavior:'smooth',block:'start'})},gen:generate,regen,copy,print,fs:toggleFs,dl:v=>dl(v),
+ edit:()=>{S.edit=!S.edit;renderOut()},
+ ex:v=>{$('req').value=T().ex[+v];renderExs();saveDraft();$('req').focus()},
+ refc:()=>{const c=$('rc').value.trim();c?refine(c):note('Tell me what you\'d like changed and I\'ll take care of it.',1)},
+ panel:v=>openPanel(v),close:()=>$('dlg').close(),tcat:v=>{S.tc=v;rerender()},tpl:v=>applyTpl(+v),
+ theme:()=>{const o=['system','light','dark'];S.set.theme=o[(o.indexOf(S.set.theme)+1)%3];saveSet();applyTheme();note('Theme: '+S.set.theme)},
+ open:openHist,
+ hcopy:async v=>{try{await navigator.clipboard.writeText(H(v).out);note('Copied ✓')}catch(e){note('Couldn\'t copy.',1)}},
+ fav:v=>{const h=H(v);h.fav=!h.fav;saveHist();rerender()},
+ ren:v=>{S.hp.ren=v;rerender();$('rn')&&$('rn').focus()},
+ rsave:v=>{const t=$('rn').value.trim();if(t)H(v).title=t.slice(0,80);S.hp.ren=null;saveHist();rerender()},
+ del:v=>confirm2('d'+v,()=>{S.hist=S.hist.filter(h=>h.id!==v);saveHist();rerender()}),
+ clearHist:()=>confirm2('ch',()=>{S.hist=[];saveHist();rerender();note('History cleared')}),
+ clearPrefs:()=>confirm2('cp',()=>{try{localStorage.removeItem('cs.set');localStorage.removeItem('cs.draft')}catch(e){}S.set=Object.assign({},DEF);S.set.brand=BR0();$('useBrand').checked=false;$('useBrand').checked=S.set.brand.on;renderGallery();
+ applyTheme();renderGreet();rerender();note('Preferences cleared')}),
+ restore:()=>{const d=S.pending;if(d){setType(d.type);setForm(d.f);if(d.out){S.out=String(d.out);renderOut()}}$('restore').hidden=true},
+ fresh:()=>{try{localStorage.removeItem('cs.draft')}catch(e){}S.pending=null;$('restore').hidden=true}
+};
+
+/* ============ NEW IN THIS VERSION ============ */
+const QA=[['Improve writing','Improve the writing of the text below. Keep the meaning and facts.'],['Rewrite','Rewrite the text below with a fresh approach, same meaning.'],['Summarize','Summarize the text below in a few clear sentences.'],['Expand','Expand the text below with more useful detail.'],['Shorten','Shorten the text below, keeping the key points.'],['Humanize','Rewrite the text below so it sounds natural and human.'],['Repurpose','Turn the text below into 5 short social media posts.'],['Brainstorm','Brainstorm 10 ideas about the topic below.']];
+function doNew(){S.conf=null;S.dirty=false;S.out='';S.edit=false;$('req').value='';renderOut();renderExs();saveDraft();$('types').scrollIntoView({behavior:'smooth',block:'start'});$('req').focus({preventScroll:true});note('Fresh page. Pick a type or tell me what you need.')}
+TITLES.newdoc='Start a new document?';TITLES.imp='Improve my prompt';
+PANELS.newdoc=()=>`<p class="sub">You have unsaved changes. What would you like to do?</p><div class="bar" style="margin-top:12px"><button class="btn" data-act="savenew">Save &amp; Continue</button><button class="btn er" data-act="discnew">Discard Changes</button><button class="btn" data-act="close">Cancel</button></div>`;
+PANELS.imp=()=>{const i=S.imp||{o:'',n:''};return `<label style="margin-top:0">Original</label><p class="sub">${esc(i.o)}</p><label for="impT">Improved (edit if you like)</label><textarea id="impT" maxlength="4000">${esc(i.n)}</textarea><div class="bar" style="margin-top:12px"><button class="btn" data-act="impuse">Use improved prompt</button><button class="btn" data-act="impcopy">Copy</button><button class="btn" data-act="close">Keep original</button></div>`};
+Object.assign(ACT,{
+ new:()=>{if(S.busy)return;if(S.dirty&&(S.out.trim()||$('req').value.trim())){openPanel('newdoc');return}doNew()},
+ savenew:()=>{const f=form();if(S.out.trim()||f.req.trim())addHist(f);$('dlg').close();doNew()},
+ discnew:()=>{$('dlg').close();doNew()},
+ type:v=>{setType(v);S.dirty=true},
+ qa:v=>{const q=QA[+v];setType('custom');const cur=$('req').value.trim();$('req').value=q[1]+'\n\n'+(cur||'[paste your text here]');S.dirty=true;renderExs();saveDraft();$('req').focus()},
+ improve:async()=>{const f=form();if(f.req.trim().length<5){note('Type a short request first, then I can sharpen it.',1);$('req').focus();return}
+  if(S.busy)return;if(!sample){try{sample=await claude.use('sample')}catch(e){}}
+  if(!sample){note('AI writing isn\'t available here. Open this page from its claude.ai link.',1);return}
+  setBusy(true);
+  try{const r=await sample(`Rewrite the request below into a clearer, more specific brief for a ${T().label}. Keep every fact the user gave; do not invent names, numbers or claims; use [placeholders] for missing details. Return only the improved request in 1-4 sentences, no quotes or commentary.\n---\n${f.req.trim()}\n---`,{cache:false});
+   S.imp={o:f.req,n:r.text.trim()};openPanel('imp')}
+  catch(e){note(errMsg(e),1)}
+  setBusy(false)},
+ impuse:()=>{const v=$('impT').value.trim();if(v){$('req').value=v;S.dirty=true;renderExs();saveDraft()}$('dlg').close();$('req').focus()},
+ impcopy:async()=>{try{await navigator.clipboard.writeText($('impT').value);note('Copied ✓')}catch(e){note('Couldn\'t copy.',1)}}
+});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&ACT[b.dataset.act])ACT[b.dataset.act](b.dataset.v)});
+document.querySelector('.card').addEventListener('input',e=>{if(e.target.id==='req')renderExs();S.dirty=true;saveDraft()});
+$('cta').addEventListener('change',()=>{$('ctacw').hidden=$('cta').value!=='Custom'});
+$('q').addEventListener('input',e=>search(e.target.value));
+document.addEventListener('click',e=>{if(!e.target.closest('.search'))$('qr').hidden=true});
+$('q').addEventListener('keydown',e=>{if(e.key==='Escape')closeQ()});
+$('useBrand').addEventListener('change',e=>{S.set.brand.on=e.target.checked;saveSet();const b=S.set.brand;if(e.target.checked&&!b.name&&!b.voice){openPanel('brand');note('Add your brand details and I\'ll use them in every draft.')}});
+$('ed').addEventListener('input',()=>{S.out=$('ed').value;S.dirty=true;stats();saveDraft()});
+$('dlg').addEventListener('input',e=>{if(e.target.id==='hq'){S.hp.q=e.target.value;$('hl').innerHTML=histList()}});
+$('dlg').addEventListener('change',e=>{const i=e.target.id,m={sTheme:'theme',sTone:'tone',sLen:'len',sLang:'lang'};
+ if(i==='hf'){S.hp.f=e.target.value;$('hl').innerHTML=histList()}
+ else if(m[i]){S.set[m[i]]=e.target.value;saveSet();applyTheme()}
+ else if(BF[i]){S.set.brand[BF[i]]=e.target.value.trim().slice(0,300);saveSet()}
+ else if(i==='sName'){S.set.name=e.target.value.trim().slice(0,40);saveSet();renderGreet()}
+ else if(i==='sAuto'){S.set.auto=e.target.checked;saveSet()}});
+$('dlg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='rn'){e.preventDefault();ACT.rsave(S.hp.ren)}});
+$('dlg').addEventListener('close',()=>{S.conf=null;S.hp.ren=null});
+addEventListener('keydown',e=>{const m=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();
+ if(m&&k==='enter'){e.preventDefault();generate()}
+ else if(m&&e.shiftKey&&k==='c'){e.preventDefault();copy()}
+ else if(m&&e.shiftKey&&k==='r'){e.preventDefault();regen()}
+ else if(k==='escape'&&S.fs&&!$('dlg').open)toggleFs()});
+
+/* ============ INIT ============ */
+(function init(){
+ fill('tone',CFG.TONES,S.set.tone);fill('len',Object.keys(CFG.LENGTHS),S.set.len);fill('goal',CFG.GOALS,'Inform');
+ fill('plat',CFG.PLATFORMS);fill('lang',Object.keys(CFG.LANGS),S.set.lang);fill('crea',Object.keys(CFG.CREA),'Balanced');fill('cta',CFG.CTAS);
+ $('refs').innerHTML=REFINE.map((r,i)=>`<button class="chip gate" data-act="${'ref'}" data-v="${i}">${r[0]}</button>`).join('');
+ ACT.ref=v=>refine(+v);
+ document.querySelectorAll('i[data-i]').forEach(e=>e.outerHTML=ic(e.dataset.i));
+ applyTheme();renderGreet();setType('blog-post');renderOut();renderRecent();
+ $('selbar').insertAdjacentHTML('beforeend',SEL.map((x,i)=>`<button class="chip gate" data-act="sel" data-v="${i}">${x[0]}</button>`).join(''));
+ $('useBrand').checked=!!S.set.brand.on;
+ $('qacts').innerHTML=QA.map((q,i)=>`<button class="chip" data-act="qa" data-v="${i}">${q[0]}</button>`).join('');
+ const d=ld('cs.draft',null);if(d&&d.f&&((d.f.req&&d.f.req.trim())||(d.out&&String(d.out).trim()))){S.pending=d;$('restore').hidden=false}
+ (async()=>{try{sample=await claude.use('sample')}catch(e){}})();
+ (async()=>{try{const u=await claude.use('user');if(u){const me=await u.me();S.prof=me.name||'';renderGreet()}}catch(e){}})();
+})();
+</script>
+</body>
+</html>
